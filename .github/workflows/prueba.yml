@@ -1,0 +1,10 @@
+name: Prueba
+
+on:
+  push
+
+jobs:
+  prueba:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "HOLA MUNDO"
