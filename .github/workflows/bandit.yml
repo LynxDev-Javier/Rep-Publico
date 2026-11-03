@@ -1,47 +1,44 @@
-
-name: "Análisis SAST con Bandit"
+name: SAST para código Python
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
-  workflow_dispatch:
+    branches: [ "main" ]
 
 jobs:
-  bandit:
-    name: Análisis de seguridad Python
+  sast-python:
     runs-on: ubuntu-latest
-
+    # Se requieren permisos de escritura en 'security-events' para subir el reporte SARIF
     permissions:
-      contents: read
       security-events: write
-      actions: read
+      contents: read
 
     steps:
-      - name: Descargar repositorio
-        uses: actions/checkout@v4
+    # 1. Descargar el código del repositorio
+    - name: Checkout de código
+      uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+    # 2. Configurar el entorno de Python
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-      - name: Instalar Bandit
-        run: |
-          python -m pip install --upgrade pip
-          pip install "bandit[sarif]"
+    # 3. Instalar Bandit y el plugin para formato SARIF
+    - name: Instalar Bandit y formateador SARIF
+      run: |
+        pip install bandit bandit-sarif-formatter
 
-      - name: Ejecutar análisis Bandit
-        run: |
-          bandit -r . \
-            --exclude .git,.venv,venv \
-            -f sarif \
-            -o results.sarif || true
+    # 4. Ejecutar el análisis y exportar a SARIF
+    # Nota: Usamos '|| true' para que el pipeline no se rompa aquí, 
+    # permitiendo que el reporte se suba a GitHub y sea procesado allí.
+    - name: Analizar con Bandit y generar SARIF
+      run: |
+        bandit -r . -f sarif -o bandit-results.sarif || true
 
-      - name: Publicar resultados en GitHub Code Scanning
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: results.sarif
-          category: bandit-python
+    # 5. Subir el archivo SARIF a la pestaña de Security
+    - name: Subir reporte a GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: bandit-results.sarif
