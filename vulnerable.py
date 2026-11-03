@@ -5,7 +5,7 @@ import subprocess
 DB_PASSWORD = "SuperSecretPassword123!"
 
 def ejecutar_comando():
-    # El usuario podría ingresar algo como: "archivo.txt; rm -rf /"
+    # El usuario podría ingresar algo como: "archivo.txt; rfm -rf /"
     archivo = input("Introduce el nombre del archivo a buscar: ")
     
     # VULNERABILIDAD 2: Uso peligroso de shell=True (Inyección de comandos)
