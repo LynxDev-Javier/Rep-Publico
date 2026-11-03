@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-# VULNERABILIDAD 1: Contraseña expuesta en el código (Hardcoded Secret)
+# VULNERABILIDAD 1: Contraseña expuesta en el código (Haradcoded Secret)
 DB_PASSWORD = "SuperSecretPassword123!"
 
 def ejecutar_comando():
